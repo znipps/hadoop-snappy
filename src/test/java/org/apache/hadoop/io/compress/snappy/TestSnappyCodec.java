@@ -20,6 +20,7 @@ package org.apache.hadoop.io.compress.snappy;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,7 +42,7 @@ public class TestSnappyCodec extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    inputDir = System.getProperty("test.build.data", "data");
+    inputDir = System.getProperty("test.build.data", "target");
   }
   
   public void testFile() throws Exception {
@@ -49,7 +50,6 @@ public class TestSnappyCodec extends TestCase {
   }
   
   private void run(String filename) throws FileNotFoundException, IOException{
-    File inputFile = new File(inputDir, filename);
     File snappyFile = new File(inputDir, filename + new SnappyCodec().getDefaultExtension());
     if (snappyFile.exists()) {
       snappyFile.delete();
@@ -59,7 +59,7 @@ public class TestSnappyCodec extends TestCase {
     CompressionCodec codec = (CompressionCodec) ReflectionUtils.newInstance(SnappyCodec.class, conf);
     
     // Compress
-    FileInputStream is = new FileInputStream(inputFile);
+    InputStream is = this.getClass().getClassLoader().getResourceAsStream("test.txt");
     FileOutputStream os = new FileOutputStream(snappyFile);
     CompressionOutputStream cos = codec.createOutputStream(os);
     
@@ -79,7 +79,7 @@ public class TestSnappyCodec extends TestCase {
     }
     
     // Decompress
-    is = new FileInputStream(inputFile);
+    is =  this.getClass().getClassLoader().getResourceAsStream("test.txt");
     FileInputStream is2 = new FileInputStream(snappyFile);
     CompressionInputStream cis = codec.createInputStream(is2);
     BufferedReader r = new BufferedReader(new InputStreamReader(is));
